@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Dose Coefficient Derivation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral (Stone, Amber) -->
+    <!-- Application Structure Plan: A single-page application focused on Dose Coefficient Derivation, structured into thematic sections: Overview, U_S Breakdown, SEE Breakdown, and Co-60 Example. This linear flow guides the user through the calculation process. Interactions include clickable formula terms for definitions, an interactive bar chart for source organ contributions, and dynamic text updates for conceptual steps. -->
+    <!-- Visualization & Content Choices: Overview -> Goal: Inform -> Text explanation & Formula Breakdown (HTML/JS) -> Clarifies the main equation. U_S Breakdown -> Goal: Inform/Organize -> Text explanation & Simplified conceptual flow -> Explains how total disintegrations are calculated. SEE Breakdown -> Goal: Inform/Organize -> Text explanation & Component list -> Details the factors influencing energy deposition. Co-60 Example -> Goal: Inform/Compare -> Textual walkthrough & Bar Chart (Chart.js) -> Illustrates the practical application with a concrete example and visualizes relative contributions. CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #d97706; /* amber-600 */
+            color: #d97706; /* amber-600 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .interactive-formula span {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            color: #d97706; /* amber-600 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Adjusted for this app's focus */
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-stone-900">Dose Coefficient Derivation</h1>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" id="nav-overview" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600 active">Overview</a>
+                    <a href="#" id="nav-us" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">U<sub>S</sub> Breakdown</a>
+                    <a href="#" id="nav-see" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">SEE Breakdown</a>
+                    <a href="#" id="nav-co60" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">Co-60 Example</a>
+                </nav>
+                 <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500">
+                        <option value="overview">Overview</option>
+                        <option value="us">U_S Breakdown</option>
+                        <option value="see">SEE Breakdown</option>
+                        <option value="co60">Co-60 Example</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <section id="overview" class="content-section active">
+            <div class="bg-white p-8 rounded-lg shadow">
+                <h2 class="text-3xl font-bold mb-4 text-amber-700">The Core Dose Equation</h2>
+                <p class="text-lg mb-4">The committed equivalent dose to a target tissue (H<sub>50,T</sub>) is the culmination of understanding how radionuclides move through the body and deposit energy. This section introduces the main formula and its key components.</p>
+                <div class="prose max-w-none">
+                    <div class="bg-stone-100 p-4 rounded-lg text-center mb-6">
+                        <p class="text-xl font-mono interactive-formula">
+                            H<sub>50,T</sub> = (Constant) &times; &Sigma;<sub>S</sub> [ <span data-term="U_S">U<sub>S</sub></span> &times; <span data-term="SEE">SEE(T &larr; S)</span> ]
+                        </p>
+                    </div>
+                    <div id="formula-explanation" class="prose max-w-none bg-amber-50 border border-amber-200 p-4 rounded-lg hidden">
+                        <h4 id="explanation-title" class="text-xl font-semibold text-amber-800"></h4>
+                        <p id="explanation-text"></p>
+                        <div id="explanation-details" class="text-sm mt-2"></div>
+                    </div>
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">Why is Dose Derivation Important?</h3>
+                    <p>Understanding dose derivation provides the "why" behind the numbers in dose tables and software like IMBA. It connects the conceptual models of radionuclide behavior to the quantitative assessment of radiation risk.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="us" class="content-section">
+            <div class="bg-white p-8 rounded-lg shadow">
+                <h2 class="text-3xl font-bold mb-4 text-amber-700">U<sub>S</sub> Breakdown: Ultimate Number of Disintegrations</h2>
+                <p class="text-lg mb-4">U<sub>S</sub> quantifies the total radioactive decay that occurs within a specific source organ over the 50-year commitment period from a 1 Bq intake. It's essentially the integral of activity over time.</p>
+                <div class="prose max-w-none">
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">Conceptual Calculation</h3>
+                    <p>For a single compartment with exponential activity decrease ($A(t) = A(0)e^{-kt}$), U<sub>S</sub> is found by integrating this function over 50 years. For linear (catenary) models, the "Skrable's Dragon" concept simplifies this: if removal is fast, all activity entering a compartment will eventually decay or clear within 50 years.</p>
+                    <p class="mt-4"><strong>Key Idea:</strong> U<sub>S</sub> tells us *how long* a radionuclide stays in an organ and *how much* it decays there. More disintegrations mean higher potential dose.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="see" class="content-section">
+            <div class="bg-white p-8 rounded-lg shadow">
+                <h2 class="text-3xl font-bold mb-4 text-amber-700">SEE Breakdown: Specific Effective Energy</h2>
+                <p class="text-lg mb-4">SEE(T &larr; S) quantifies the energy deposited in a target organ (T) per unit mass, for each nuclear transformation occurring in a source organ (S).</p>
+                <div class="prose max-w-none">
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">Components of SEE</h3>
+                    <p>The calculation of SEE considers several factors:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Y (Yield):</strong> How many particles of a specific type (alpha, beta, gamma) are emitted per transformation.</li>
+                        <li><strong>E (Energy):</strong> The average energy of that particle type (in MeV).</li>
+                        <li><strong>AF (Absorbed Fraction):</strong> The fraction of energy emitted in the source organ that is actually absorbed in the target organ. (Often 1 for alpha/beta in the source organ, more complex for gamma).</li>
+                        <li><strong>Q (Quality Factor):</strong> The radiation weighting factor, accounting for biological effectiveness (e.g., 1 for photons/electrons, 20 for alpha).</li>
+                        <li><strong>M (Mass of Target Organ):</strong> The mass of the target organ (in grams), used to normalize energy deposition.</li>
+                    </ul>
+                    <p class="mt-4"><strong>Key Idea:</strong> SEE tells us *where* the energy goes and *how effective* it is at causing damage in specific target tissues.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="co60" class="content-section">
+            <div class="bg-white p-8 rounded-lg shadow">
+                <h2 class="text-3xl font-bold mb-4 text-amber-700">Cobalt-60 Example: Putting it All Together</h2>
+                <p class="text-lg mb-4">Let's walk through the conceptual steps of calculating the dose coefficient for a 1 Bq intake of Class Y Cobalt-60 (<sup>60</sup>Co), as discussed in Lecture 4. This illustrates how U<sub>S</sub> and SEE combine.</p>
+                <div class="prose max-w-none">
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">1. Initial Atoms and U<sub>S</sub> Calculation</h3>
+                    <p>For 1 Bq of <sup>60</sup>Co (half-life ~5.271 years), the initial number of atoms is approximately 2.4 &times; 10<sup>8</sup>. This activity then distributes through the respiratory, GI, and systemic models. U<sub>S</sub> is calculated for each compartment based on deposition, transfer rates, and decay.</p>
+                    <p class="mt-2">For example, for the lungs, after considering deposition and clearance, the total disintegrations (U<sub>S</sub>) would be a significant value due to the long retention of Class Y material.</p>
+                    
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">2. SEE Factor Determination</h3>
+                    <p><sup>60</sup>Co is a beta-minus emitter followed by two high-energy gamma rays. For each disintegration, we determine how much energy is deposited in various target organs. For instance:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>Beta energy from <sup>60</sup>Co decaying in the lungs is largely absorbed *within* the lungs (AF &approx; 1).</li>
+                        <li>Gamma energy from <sup>60</sup>Co decaying in the lungs can travel and deposit energy in distant organs (e.g., liver, total body), meaning AF < 1.</li>
+                    </ul>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">3. Combining U<sub>S</sub> and SEE for Dose</h3>
+                    <p>The U<sub>S</sub> for each source organ is multiplied by the corresponding SEE values for all target organs. These contributions are summed up. For example, the total committed equivalent dose to the lung would include contributions from <sup>60</sup>Co decaying in the lung itself, the GI tract, and systemic organs.</p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-2">4. Final Committed Effective Dose</h3>
+                    <p>After calculating the committed equivalent dose for all target tissues, these are multiplied by their respective tissue weighting factors (w<sub>T</sub>) and summed to yield the total Committed Effective Dose Equivalent (CEDE).</p>
+                    <p class="mt-4">For <sup>60</sup>Co, the final calculated dose conversion factors (DCFs) are:</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>ICRP 30 rule: ~8.89 &times; 10<sup>-9</sup> Sv/Bq</li>
+                        <li>ICRP 30 supplement rule: ~7.64 &times; 10<sup>-9</sup> Sv/Bq</li>
+                    </ul>
+                    <p class="mt-4">This demonstrates how the complex interplay of radionuclide behavior and energy deposition culminates in a single dose coefficient value.</p>
+                    
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">Visualizing Source Organ Contribution (Revisited)</h3>
+                    <p class="mb-4">This chart, similar to what we saw in the main guide, helps visualize how different source organs contribute to the total committed dose of a single target organ (e.g., Lungs) for a hypothetical intake of Cobalt-60. Note the logarithmic scale due to wide range of values.</p>
+                    <div class="chart-container">
+                        <canvas id="co60DoseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function setActiveSection(sectionId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.id === `nav-${sectionId}`);
+                });
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === sectionId);
+                });
+                if (mobileNav.value !== sectionId) {
+                    mobileNav.value = sectionId;
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = e.target.id.replace('nav-', '');
+                    setActiveSection(sectionId);
+                });
+            });
+
+            mobileNav.addEventListener('change', (e) => {
+                setActiveSection(e.target.value);
+            });
+
+            const formulaTerms = document.querySelectorAll('.interactive-formula span');
+            const explanationBox = document.getElementById('formula-explanation');
+            const explanationTitle = document.getElementById('explanation-title');
+            const explanationText = document.getElementById('explanation-text');
+            const explanationDetails = document.getElementById('explanation-details');
+
+            const formulaExplanations = {
+                'U_S': {
+                    title: 'U_S: Ultimate Number of Disintegrations',
+                    text: 'This represents the total number of nuclear transformations (disintegrations) that occur in a specific source organ (S) over the 50-year commitment period from a 1 Bq intake.',
+                    details: 'It tells us *how long* a radionuclide stays in an organ and *how much* it decays there. It is calculated using biokinetic models. The "Skrable\'s Dragon" concept is a mathematical solution for calculating U_S in linear (catenary) systems.'
+                },
+                'SEE': {
+                    title: 'SEE(T ← S): Specific Effective Energy',
+                    text: 'The amount of energy deposited in a target organ (T) per unit mass, for each nuclear transformation occurring in a source organ (S).',
+                    details: 'It accounts for: <strong>Y (Yield)</strong>, <strong>E (Energy)</strong>, <strong>AF (Absorbed Fraction)</strong>, <strong>Q (Quality Factor)</strong>, and <strong>M (Mass of Target Organ)</strong>. In short, it tells us *where* the energy goes and *how effective* it is at causing damage.'
+                }
+            };
+
+            formulaTerms.forEach(term => {
+                term.addEventListener('click', () => {
+                    const termKey = term.dataset.term;
+                    const explanation = formulaExplanations[termKey];
+                    explanationTitle.textContent = explanation.title;
+                    explanationText.textContent = explanation.text;
+                    explanationDetails.innerHTML = explanation.details;
+                    explanationBox.classList.remove('hidden');
+                });
+            });
+            
+            const ctxCo60 = document.getElementById('co60DoseChart').getContext('2d');
+            const co60DoseChart = new Chart(ctxCo60, {
+                type: 'bar',
+                data: {
+                    labels: ['Lungs', 'Stomach', 'Small Intestine', 'ULI', 'LLI', 'Liver', 'Total Body'],
+                    datasets: [{
+                        label: 'Relative Dose Contribution to Lungs from Co-60',
+                        data: [360, 0.008, 0.005, 0.006, 0.001, 0.019, 0.012],
+                        backgroundColor: [
+                            'rgba(217, 119, 6, 0.6)',
+                            'rgba(234, 179, 8, 0.6)',
+                            'rgba(161, 98, 7, 0.6)',
+                            'rgba(101, 163, 13, 0.6)',
+                            'rgba(22, 163, 74, 0.6)',
+                            'rgba(5, 150, 105, 0.6)',
+                            'rgba(13, 148, 136, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(217, 119, 6, 1)',
+                            'rgba(234, 179, 8, 1)',
+                            'rgba(161, 98, 7, 1)',
+                            'rgba(101, 163, 13, 1)',
+                            'rgba(22, 163, 74, 1)',
+                            'rgba(5, 150, 105, 1)',
+                            'rgba(13, 148, 136, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Relative Dose (Arbitrary Units)'
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                autoSkip: false
+                           }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Source Organ Contribution to Lung Dose (Co-60)',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x.toExponential(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
