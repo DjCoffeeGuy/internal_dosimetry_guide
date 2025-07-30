@@ -13,6 +13,9 @@
             font-family: 'Inter', sans-serif;
             background-color: #f5f5f4; /* stone-100 */
         }
+        html {
+            scroll-behavior: smooth;
+        }
         .guide-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             cursor: pointer;
@@ -33,10 +36,32 @@
 </head>
 <body class="text-stone-800">
 
-    <header class="bg-white shadow-md">
+    <header class="bg-white shadow-md sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-center items-center py-6">
-                <h1 class="text-4xl font-bold text-stone-900">Internal Dosimetry Learning Hub</h1>
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.832 18.477 19.246 18 17.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-bold text-stone-900">Internal Dosimetry Learning Hub</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#available-modules" class="text-stone-600 hover:text-amber-600 font-medium">Learning Modules</a>
+                    <a href="#quick-reference" class="text-stone-600 hover:text-amber-600 font-medium">Quick Reference</a>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-stone-400">|</span>
+                        <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm font-medium">Learning Hub</span>
+                    </div>
+                </nav>
+                <div class="md:hidden">
+                    <button class="text-stone-600 hover:text-amber-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -46,7 +71,7 @@
         <!-- Welcome Section -->
         <section class="text-center mb-16">
             <div class="bg-white p-8 rounded-lg shadow-md">
-                <h2 class="text-3xl font-bold mb-4 text-amber-700">Welcome to Your Comprehensive Learning Resource</h2>
+                <h2 class="text-4xl font-bold mb-4 text-amber-700">Welcome to Your Comprehensive Learning Resource</h2>
                 <p class="text-lg text-stone-600 max-w-4xl mx-auto">
                     Explore interactive guides, detailed derivations, and practical examples that demystify the principles of occupational internal dosimetry. 
                     Each module is designed to help you understand complex concepts through clear explanations and engaging visualizations.
@@ -55,7 +80,7 @@
         </section>
 
         <!-- Available Guides -->
-        <section class="mb-16">
+        <section id="available-modules" class="mb-16">
             <h3 class="text-2xl font-bold mb-8 text-stone-900 text-center">Available Learning Modules</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
@@ -173,7 +198,7 @@
         </section>
 
         <!-- Quick Reference -->
-        <section class="mb-16">
+        <section id="quick-reference" class="mb-16">
             <h3 class="text-2xl font-bold mb-8 text-stone-900 text-center">Quick Reference</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 

@@ -94,16 +94,32 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-4">
-                    <a href="index.html" class="text-stone-500 hover:text-amber-600" title="Back to Home">&larr; Back</a>
-                    <h1 class="text-2xl font-bold text-stone-900">Interactive Guide to Internal Dosimetry</h1>
+                    <div class="flex items-center space-x-2 text-sm text-stone-500">
+                        <a href="index.html" class="hover:text-amber-600 font-medium">Learning Hub</a>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span class="text-amber-600 font-medium">Interactive Introduction</span>
+                    </div>
                 </div>
+                <div class="flex items-center space-x-4">
+                    <a href="DC_Derivation.html" class="hidden md:inline-flex items-center text-stone-600 hover:text-amber-600 font-medium">
+                        Next: Dose Derivation
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-stone-200 pt-4">
+                <h1 class="text-3xl font-bold text-stone-900 mb-4">Interactive Guide to Internal Dosimetry</h1>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#" id="nav-overview" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600 active">Overview</a>
                     <a href="#" id="nav-concepts" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">Key Concepts</a>
                     <a href="#" id="nav-models" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">Biokinetic Models</a>
                     <a href="#" id="nav-calculation" class="nav-link text-lg font-medium text-stone-600 hover:text-amber-600">Dose Calculation</a>
                 </nav>
-                 <div class="md:hidden">
+                <div class="md:hidden mt-4">
                     <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500">
                         <option value="overview">Overview</option>
                         <option value="concepts">Key Concepts</option>
@@ -594,5 +610,36 @@
 
         });
     </script>
+
+    <!-- Bottom Navigation -->
+    <footer class="bg-white border-t border-stone-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center text-stone-600 hover:text-amber-600 font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Learning Hub
+                </a>
+                <div class="text-center">
+                    <p class="text-sm text-stone-500 mb-2">Continue Your Learning Journey</p>
+                    <div class="flex items-center space-x-4">
+                        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">Step 1: Complete ✓</span>
+                        <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-sm font-medium">Step 2: Next</span>
+                    </div>
+                </div>
+                <a href="DC_Derivation.html" class="flex items-center text-amber-600 hover:text-amber-700 font-medium">
+                    Next: Dose Coefficient Derivation
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
