@@ -6,6 +6,10 @@
     <title>Module 3: Intake Assessment - Internal Dosimetry Learning Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Glossary System -->
+    <script src="glossary-definitions.js"></script>
+    <script src="glossary-modal.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -1287,6 +1291,7 @@
             loadProgress();
             updateSidebarProgress();
             initializeQuiz(); // Initialize quiz system
+            initializeGlossarySystem(); // Initialize glossary modal system
         });
 
         // Add alias for markSection to work with existing template
@@ -1294,13 +1299,7 @@
             markSectionComplete(sectionId);
         }
 
-        // Glossary term hover (placeholder - would integrate with full glossary system)
-        document.querySelectorAll('.glossary-term').forEach(term => {
-            term.addEventListener('click', function() {
-                const termDef = this.dataset.term;
-                alert(`Glossary term: ${termDef} - (This would show a proper definition popup in the full system)`);
-            });
-        });
+        // Glossary term system now handled by glossary-modal.js
     </script>
 </body>
 </html>

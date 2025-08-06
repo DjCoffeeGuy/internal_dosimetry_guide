@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 4: Dose Calculation - Internal Dosimetry</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Glossary System -->
+    <script src="glossary-definitions.js"></script>
+    <script src="glossary-modal.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -1008,6 +1012,7 @@
             loadProgress();
             updateSidebarProgress(); // CRITICAL: Initialize sidebar
             initializeQuiz();
+            initializeGlossarySystem(); // Initialize glossary modal system
         });
 
         // Quiz system with persistence

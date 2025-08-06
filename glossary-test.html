@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossary System Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="glossary-definitions.js"></script>
+    <script src="glossary-modal.js"></script>
+</head>
+<body class="p-8 bg-gray-50">
+    <div class="max-width-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Glossary System Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4">Test All Glossary Terms</h2>
+            <p class="mb-4">Click any term below to test the glossary popup system:</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <span class="glossary-term" data-term="radionuclides">Radionuclides</span>
+                <span class="glossary-term" data-term="internal-dosimetry">Internal Dosimetry</span>
+                <span class="glossary-term" data-term="radiobioassay">Radiobioassay</span>
+                <span class="glossary-term" data-term="biokinetic-models">Biokinetic Models</span>
+                <span class="glossary-term" data-term="intake">Intake</span>
+                <span class="glossary-term" data-term="committed-effective-dose">Committed Effective Dose</span>
+                <span class="glossary-term" data-term="dose-coefficients">Dose Coefficients</span>
+                <span class="glossary-term" data-term="absorbed-dose">Absorbed Dose</span>
+                <span class="glossary-term" data-term="equivalent-dose">Equivalent Dose</span>
+                <span class="glossary-term" data-term="effective-dose">Effective Dose</span>
+                <span class="glossary-term" data-term="in-vitro">In Vitro</span>
+                <span class="glossary-term" data-term="in-vivo">In Vivo</span>
+                <span class="glossary-term" data-term="decision-level">Decision Level</span>
+                <span class="glossary-term" data-term="mda">MDA</span>
+                <span class="glossary-term" data-term="biokinetic-model">Biokinetic Model</span>
+                <span class="glossary-term" data-term="irf">IRF</span>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">✅ Expected Behavior:</h3>
+            <ul class="text-blue-700 space-y-1">
+                <li>• Terms should be styled with blue text and dotted underlines</li>
+                <li>• Clicking should open a professional modal with definition</li>
+                <li>• Modal should show term category, definition, and references</li>
+                <li>• Related terms should be clickable to navigate between definitions</li>
+                <li>• Modal should close with X button, outside click, or Escape key</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGlossarySystem();
+            console.log('Glossary system initialized for testing');
+        });
+    </script>
+</body>
+</html>
