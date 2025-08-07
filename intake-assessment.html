@@ -10,6 +10,9 @@
     <!-- Glossary System -->
     <script src="glossary-definitions.js"></script>
     <script src="glossary-modal.js"></script>
+    
+    <!-- Feedback System -->
+    <script src="feedback-system.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -173,6 +176,9 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button onclick="openFeedbackAdminDashboard()" class="text-stone-400 hover:text-blue-600 text-sm font-medium" title="Feedback Admin">
+                        🛠️ Admin
+                    </button>
                     <a href="dose-calculation.html" class="hidden md:inline-flex items-center text-stone-600 hover:text-blue-600 font-medium">
                         Next: Dose Calculation
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -186,7 +192,7 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Main Content -->
             
             <!-- Module Introduction -->
@@ -1292,6 +1298,7 @@
             updateSidebarProgress();
             initializeQuiz(); // Initialize quiz system
             initializeGlossarySystem(); // Initialize glossary modal system
+            initializeFeedbackSystem(); // Initialize feedback system
         });
 
         // Add alias for markSection to work with existing template

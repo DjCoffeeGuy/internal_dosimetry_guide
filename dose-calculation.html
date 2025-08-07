@@ -9,6 +9,9 @@
     <!-- Glossary System -->
     <script src="glossary-definitions.js"></script>
     <script src="glossary-modal.js"></script>
+    
+    <!-- Feedback System -->
+    <script src="feedback-system.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -127,6 +130,9 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button onclick="openFeedbackAdminDashboard()" class="text-stone-400 hover:text-purple-600 text-sm font-medium" title="Feedback Admin">
+                        🛠️ Admin
+                    </button>
                     <span class="text-stone-600 text-sm font-medium">Course Complete!</span>
                 </div>
             </div>
@@ -137,7 +143,7 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Main Content -->
             
             <!-- Module Introduction -->
@@ -1013,6 +1019,7 @@
             updateSidebarProgress(); // CRITICAL: Initialize sidebar
             initializeQuiz();
             initializeGlossarySystem(); // Initialize glossary modal system
+            initializeFeedbackSystem(); // Initialize feedback system
         });
 
         // Quiz system with persistence

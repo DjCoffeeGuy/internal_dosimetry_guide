@@ -10,6 +10,9 @@
     <!-- Glossary System -->
     <script src="glossary-definitions.js"></script>
     <script src="glossary-modal.js"></script>
+    
+    <!-- Feedback System -->
+    <script src="feedback-system.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -169,7 +172,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-stone-600">Module 2 Progress:</span>
+                    <span class="text-sm font-medium text-stone-600">Learning Progress:</span>
                     <div class="w-32 bg-stone-200 rounded-full h-2">
                         <div id="overall-progress" class="progress-bar h-2 rounded-full" style="width: 0%"></div>
                     </div>
@@ -199,6 +202,9 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button onclick="openFeedbackAdminDashboard()" class="text-stone-400 hover:text-blue-600 text-sm font-medium" title="Feedback Admin">
+                        🛠️ Admin
+                    </button>
                     <a href="intake-assessment.html" class="hidden md:inline-flex items-center text-stone-600 hover:text-green-600 font-medium">
                         Next: Intake Assessment
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,8 +220,7 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             
             <!-- Module Introduction -->
             <div class="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-l-4 border-green-400">
@@ -753,6 +758,10 @@
                         <p class="text-green-700">You now understand how to obtain reliable measurements. Next, we'll explore how biokinetic models convert these measurements into intake estimates.</p>
                     </div>
                 </div>
+            </div>
+            
+            </div>
+            
     </main>
 
     <script>
@@ -1068,11 +1077,6 @@
             const percentage = Math.round((completed / total) * 100);
             
             document.getElementById('overall-progress').style.width = percentage + '%';
-            document.getElementById('progress-text').textContent = percentage + '% Complete';
-            
-            // Also update sidebar
-            updateSidebarProgress();
-        }
         function updateProgressDisplay() {
             const completed = Object.values(sectionProgress).filter(Boolean).length;
             const total = Object.keys(sectionProgress).length;
@@ -1080,6 +1084,9 @@
             
             document.getElementById('overall-progress').style.width = percentage + '%';
             document.getElementById('progress-text').textContent = percentage + '% Complete';
+            
+            // CRITICAL: Always update sidebar
+            updateSidebarProgress();
         }
 
         // Update section visual states
@@ -1406,12 +1413,83 @@
             }
         }
 
+        // Sidebar functions (REQUIRED)
+        function toggleSidebar() {
+            const content = document.getElementById('sidebar-content');
+            const toggle = document.getElementById('sidebar-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '−';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '+';
+            }
+        }
+
+        function resetAllProgress() {
+            resetProgress();
+        }
+
+        function updateSidebarProgress() {
+            const completed = Object.values(sectionProgress).filter(Boolean).length;
+            const total = Object.keys(sectionProgress).length;
+            
+            // Update overall progress in sidebar
+            const sidebarProgress = document.getElementById('overall-progress-sidebar');
+            if (sidebarProgress) {
+                sidebarProgress.textContent = `${completed}/${total} Complete`;
+            }
+            
+            // Update section checklist
+            const checklist = document.getElementById('section-checklist');
+            if (checklist) {
+                checklist.innerHTML = `
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center">
+                            <span class="${sectionProgress['section-1'] ? 'text-blue-600' : 'text-stone-400'}">${sectionProgress['section-1'] ? '✓' : '○'}</span>
+                            <span class="ml-2 text-sm">What is Bioassay?</span>
+                        </div>
+                        ${sectionProgress['section-1'] ? '<button onclick="unmarkSection(\'section-1\')" class="text-xs text-red-500 hover:text-red-700">Reset</button>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center">
+                            <span class="${sectionProgress['section-2'] ? 'text-blue-600' : 'text-stone-400'}">${sectionProgress['section-2'] ? '✓' : '○'}</span>
+                            <span class="ml-2 text-sm">In Vitro vs In Vivo</span>
+                        </div>
+                        ${sectionProgress['section-2'] ? '<button onclick="unmarkSection(\'section-2\')" class="text-xs text-red-500 hover:text-red-700">Reset</button>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center">
+                            <span class="${sectionProgress['section-3'] ? 'text-blue-600' : 'text-stone-400'}">${sectionProgress['section-3'] ? '✓' : '○'}</span>
+                            <span class="ml-2 text-sm">Statistical Concepts</span>
+                        </div>
+                        ${sectionProgress['section-3'] ? '<button onclick="unmarkSection(\'section-3\')" class="text-xs text-red-500 hover:text-red-700">Reset</button>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center">
+                            <span class="${sectionProgress['section-4'] ? 'text-blue-600' : 'text-stone-400'}">${sectionProgress['section-4'] ? '✓' : '○'}</span>
+                            <span class="ml-2 text-sm">Quality Assurance</span>
+                        </div>
+                        ${sectionProgress['section-4'] ? '<button onclick="unmarkSection(\'section-4\')" class="text-xs text-red-500 hover:text-red-700">Reset</button>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center">
+                            <span class="${sectionProgress['quiz'] ? 'text-blue-600' : 'text-stone-400'}">${sectionProgress['quiz'] ? '✓' : '○'}</span>
+                            <span class="ml-2 text-sm">Knowledge Check</span>
+                        </div>
+                        ${sectionProgress['quiz'] ? '<button onclick="resetQuizOnly()" class="text-xs text-red-500 hover:text-red-700">Reset</button>' : ''}
+                    </div>
+                `;
+            }
+        }
+
         // Initialize everything on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadProgress();
             updateSidebarProgress();
             initializeQuiz(); // Initialize quiz system
             initializeGlossarySystem(); // Initialize glossary modal system
+            initializeFeedbackSystem(); // Initialize feedback system
         });
 
         // Glossary term system now handled by glossary-modal.js
