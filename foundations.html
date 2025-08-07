@@ -943,6 +943,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProgress();
             updateSidebarProgress(); // CRITICAL: Initialize sidebar
+            updateProgressDisplay();
+            updateSectionVisuals();
             initializeQuiz();
             initializeGlossarySystem(); // Initialize glossary modal system
             initializeFeedbackSystem(); // Initialize feedback system
@@ -1223,14 +1225,6 @@
         function markSection(sectionId) {
             markSectionComplete(sectionId);
         }
-
-        // Initialize everything on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProgress();
-            updateSidebarProgress();
-            updateProgressDisplay();
-            updateSectionVisuals();
-        });
     </script>
 </body>
 </html>
