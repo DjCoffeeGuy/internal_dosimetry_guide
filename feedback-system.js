@@ -91,6 +91,9 @@ function initializeFeedbackSystem() {
     addFeedbackControlsToSections();
     createFeedbackModal();
     
+    // Initialize floating indicator
+    updateFloatingIndicator();
+    
     feedbackSystemInitialized = true;
     
     console.log('Feedback system initialized with', feedbackStorage.feedback.length, 'stored feedback items');
@@ -264,8 +267,11 @@ function createFeedbackModal() {
                             <button type="button" id="feedback-cancel" class="px-4 py-2 text-stone-600 bg-stone-100 hover:bg-stone-200 rounded transition-colors">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
-                                Submit Feedback
+                            <button type="button" id="feedback-save" class="px-4 py-2 bg-stone-600 hover:bg-stone-700 text-white rounded transition-colors">
+                                💾 Save for Later
+                            </button>
+                            <button type="button" id="feedback-send" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+                                📧 Send Now
                             </button>
                         </div>
                     </form>
@@ -318,6 +324,18 @@ function setupFeedbackModalListeners() {
     closeBtn.addEventListener('click', closeFeedbackModal);
     cancelBtn.addEventListener('click', closeFeedbackModal);
     
+    // New button handlers
+    const saveBtn = document.getElementById('feedback-save');
+    const sendBtn = document.getElementById('feedback-send');
+    
+    if (saveBtn) {
+        saveBtn.addEventListener('click', handleSaveForLater);
+    }
+    
+    if (sendBtn) {
+        sendBtn.addEventListener('click', handleSendNow);
+    }
+    
     // Click outside to close
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeFeedbackModal();
@@ -329,9 +347,6 @@ function setupFeedbackModalListeners() {
             closeFeedbackModal();
         }
     });
-    
-    // Form submission
-    form.addEventListener('submit', handleFeedbackSubmission);
 }
 
 // Open feedback modal with specific configuration
@@ -381,40 +396,6 @@ function closeFeedbackModal() {
 }
 
 // Handle feedback form submission
-function handleFeedbackSubmission(e) {
-    e.preventDefault();
-    
-    const modal = document.getElementById('feedback-modal');
-    const formData = new FormData(e.target);
-    
-    const feedbackData = {
-        category: formData.get('category'),
-        section: modal.getAttribute('data-section'),
-        module: modal.getAttribute('data-module'),
-        message: formData.get('message'),
-        userEmail: formData.get('email')
-    };
-    
-    // Validate required fields
-    if (!feedbackData.category) {
-        alert('Please select a feedback type.');
-        return;
-    }
-    
-    if (!feedbackData.message.trim()) {
-        alert('Please enter your feedback message.');
-        return;
-    }
-    
-    // Save feedback
-    const saved = feedbackStorage.add(feedbackData);
-    
-    // Show success message
-    showFeedbackSuccess(saved);
-    
-    // Close modal
-    closeFeedbackModal();
-}
 
 // Show feedback success notification
 function showFeedbackSuccess(feedback) {
@@ -426,7 +407,7 @@ function showFeedbackSuccess(feedback) {
             <span>✅</span>
             <div>
                 <div class="font-semibold">Feedback Submitted!</div>
-                <div class="text-sm opacity-90">Thank you for helping improve this content</div>
+                <div class="text-sm opacity-90"> </div>
             </div>
         </div>
     `;
@@ -443,154 +424,333 @@ function showFeedbackSuccess(feedback) {
     }, 4000);
 }
 
-// Setup admin dashboard (simple version for testing)
-// Setup admin dashboard (modal version)
-function setupAdminDashboard() {
-    // Check if admin modal already exists
-    let adminModal = document.getElementById('admin-feedback-modal');
+// Handle "Save for Later" button click
+function handleSaveForLater() {
+    const feedbackData = collectFeedbackData();
+    if (!feedbackData) return;
     
-    if (!adminModal) {
-        // Create admin modal
-        adminModal = document.createElement('div');
-        adminModal.id = 'admin-feedback-modal';
-        adminModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden';
-        adminModal.innerHTML = `
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-stone-200 px-6 py-4 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-stone-800">🛠️ Feedback Admin Dashboard</h3>
-                    <button id="admin-modal-close" class="text-stone-400 hover:text-stone-600 text-2xl">&times;</button>
-                </div>
-                <div class="p-6">
-                    <div class="mb-4 flex gap-3">
-                        <button id="export-feedback" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors">
-                            📥 Export Data
-                        </button>
-                        <button id="clear-feedback" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition-colors">
-                            🗑️ Clear All
-                        </button>
-                        <div class="ml-auto text-sm text-stone-600 flex items-center">
-                            Total Feedback: <span id="feedback-count" class="ml-1 font-semibold">0</span>
-                        </div>
+    // Save feedback to localStorage
+    const saved = feedbackStorage.add(feedbackData);
+    
+    // Show success message
+    showFeedbackSuccess(saved, 'saved');
+    
+    // Update floating indicator
+    updateFloatingIndicator();
+    
+    // Close modal
+    closeFeedbackModal();
+}
+
+// Handle "Send Now" button click  
+function handleSendNow() {
+    const feedbackData = collectFeedbackData();
+    if (!feedbackData) return;
+    
+    // Create email content
+    const emailContent = formatFeedbackEmail(feedbackData);
+    
+    // Open email client
+    const mailto = `mailto:dj@theradguy.com?subject=${encodeURIComponent(emailContent.subject)}&body=${encodeURIComponent(emailContent.body)}`;
+    window.open(mailto);
+    
+    // Show success message
+    showEmailSentMessage();
+    
+    // Close modal
+    closeFeedbackModal();
+}
+
+// Collect feedback data from form
+function collectFeedbackData() {
+    const modal = document.getElementById('feedback-modal');
+    const form = document.getElementById('feedback-form');
+    const formData = new FormData(form);
+    
+    const feedbackData = {
+        category: formData.get('category'),
+        section: modal.getAttribute('data-section'),
+        module: modal.getAttribute('data-module'),
+        message: formData.get('message'),
+        userEmail: formData.get('email')
+    };
+    
+    // Validate required fields
+    if (!feedbackData.category) {
+        alert('Please select a feedback type.');
+        return null;
+    }
+    
+    if (!feedbackData.message.trim()) {
+        alert('Please enter your feedback message.');
+        return null;
+    }
+    
+    return feedbackData;
+}
+
+// Format feedback for email
+function formatFeedbackEmail(feedbackData) {
+    const subject = `Internal Dosimetry Feedback: ${feedbackData.category} - ${feedbackData.module}`;
+    
+    const body = `Internal Dosimetry Learning Platform Feedback
+    
+Category: ${FEEDBACK_CATEGORIES[feedbackData.category]?.label || feedbackData.category}
+Module: ${feedbackData.module}
+Section: ${feedbackData.section}
+${feedbackData.userEmail ? `User Email: ${feedbackData.userEmail}` : ''}
+
+Message:
+${feedbackData.message}
+
+---
+Sent from Internal Dosimetry Learning Platform
+Timestamp: ${new Date().toLocaleString()}`;
+    
+    return { subject, body };
+}
+
+// Show email sent message
+function showEmailSentMessage() {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
+    notification.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span>📧</span>
+            <div>
+                <div class="font-semibold">Email Client Opened!</div>
+                <div class="text-sm opacity-90">Your feedback is ready to send</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
+// Quiz-specific email feedback function
+function openQuizFeedbackEmail() {
+    // Determine which module we're on
+    const currentUrl = window.location.pathname;
+    let moduleName = '';
+    
+    if (currentUrl.includes('foundations')) {
+        moduleName = 'Module 1: Foundations';
+    } else if (currentUrl.includes('bioassay')) {
+        moduleName = 'Module 2: Bioassay';
+    } else if (currentUrl.includes('intake-assessment')) {
+        moduleName = 'Module 3: Intake Assessment';
+    } else if (currentUrl.includes('dose-calculation')) {
+        moduleName = 'Module 4: Dose Calculation';
+    } else {
+        moduleName = 'Unknown Module';
+    }
+    
+    // Create pre-filled email content for quiz feedback
+    const subject = `Internal Dosimetry Quiz Feedback: ${moduleName}`;
+    const body = `Internal Dosimetry Learning Platform - Quiz Feedback
+
+Module: ${moduleName}
+Quiz Section: Knowledge Check Quiz
+
+Please share your feedback about this quiz:
+(Was it helpful? Too easy/hard? Missing content? Confusing questions?)
+
+Your feedback:
+
+
+---
+Sent from Internal Dosimetry Learning Platform
+Timestamp: ${new Date().toLocaleString()}`;
+    
+    const mailto = `mailto:dj@theradguy.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto);
+    
+    // Show success message
+    showEmailSentMessage();
+}
+
+// Update floating indicator for saved feedback
+function updateFloatingIndicator() {
+    let indicator = document.getElementById('feedback-indicator');
+    
+    if (!indicator) {
+        // Create floating indicator with reset button
+        indicator = document.createElement('div');
+        indicator.id = 'feedback-indicator';
+        indicator.className = 'fixed bottom-4 right-4 bg-amber-500 text-white rounded-lg shadow-lg z-40 transition-colors';
+        indicator.innerHTML = `
+            <div class="flex items-center">
+                <div class="px-3 py-2 cursor-pointer hover:bg-amber-600 transition-colors rounded-l-lg" onclick="sendAllFeedback()">
+                    <div class="flex items-center gap-2">
+                        <span>�</span>
+                        <span class="text-sm">Send</span>
+                        <span id="feedback-count">0</span>
+                        <span class="text-sm">feedback</span>
                     </div>
-                    <div id="feedback-list" class="space-y-4">
-                        <!-- Feedback items will be populated here -->
-                    </div>
                 </div>
+                <button id="feedback-reset-btn" class="px-2 py-2 hover:bg-red-600 bg-red-500 transition-colors rounded-r-lg border-l border-red-400" onclick="resetSavedFeedback()" title="Clear saved feedback">
+                    <span class="text-xs">✕</span>
+                </button>
             </div>
         `;
         
-        document.body.appendChild(adminModal);
-        
-        // Setup admin modal event listeners
-        setupAdminModalListeners();
+        document.body.appendChild(indicator);
     }
     
-    // Load and display feedback
-    feedbackStorage.load();
-    updateAdminDashboard();
-    
-    // Show the modal
-    adminModal.classList.remove('hidden');
-}
-
-// Setup admin modal event listeners
-function setupAdminModalListeners() {
-    const modal = document.getElementById('admin-feedback-modal');
-    const closeBtn = document.getElementById('admin-modal-close');
-    const exportBtn = document.getElementById('export-feedback');
-    const clearBtn = document.getElementById('clear-feedback');
-    
-    // Close modal
-    closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-    
-    // Click outside to close
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.add('hidden');
-        }
-    });
-    
-    // Export feedback
-    exportBtn.addEventListener('click', exportFeedbackData);
-    
-    // Clear feedback
-    clearBtn.addEventListener('click', clearAllFeedback);
-}
-
-// Update admin dashboard display
-function updateAdminDashboard() {
+    // Update count
     const countElement = document.getElementById('feedback-count');
-    const listElement = document.getElementById('feedback-list');
-    
     if (countElement) {
         countElement.textContent = feedbackStorage.feedback.length;
     }
     
-    if (listElement) {
-        if (feedbackStorage.feedback.length === 0) {
-            listElement.innerHTML = '<div class="text-center text-stone-500 py-8">No feedback submitted yet</div>';
-        } else {
-            listElement.innerHTML = feedbackStorage.feedback.map(fb => `
-                <div class="border border-stone-200 rounded-lg p-4 bg-stone-50">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex items-center">
-                            <span class="text-lg mr-2">${FEEDBACK_CATEGORIES[fb.category]?.icon || '💬'}</span>
-                            <div>
-                                <div class="font-medium text-stone-800">${FEEDBACK_CATEGORIES[fb.category]?.label || 'General Feedback'}</div>
-                                <div class="text-sm text-stone-600">${fb.module} › ${fb.section}</div>
-                            </div>
-                        </div>
-                        <div class="text-xs text-stone-400">${new Date(fb.timestamp).toLocaleString()}</div>
-                    </div>
-                    <div class="text-stone-700 mb-2">${fb.message}</div>
-                    ${fb.userEmail ? `<div class="text-xs text-stone-500">Contact: ${fb.userEmail}</div>` : ''}
-                </div>
-            `).join('');
-        }
+    // Show/hide indicator based on count
+    if (feedbackStorage.feedback.length > 0) {
+        indicator.style.display = 'block';
+    } else {
+        indicator.style.display = 'none';
     }
 }
 
-// Export feedback data
-function exportFeedbackData() {
-    const data = feedbackStorage.export();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+// Modified success message to handle different types
+function showFeedbackSuccess(feedback, type = 'submitted') {
+    const messages = {
+        'submitted': {
+            title: 'Feedback Submitted!',
+            subtitle: 'Thank you for helping improve this content'
+        },
+        'saved': {
+            title: 'Feedback Saved!',
+            subtitle: 'You can send it later from the indicator'
+        }
+    };
     
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `internal-dosimetry-feedback-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const msg = messages[type] || messages['submitted'];
     
-    alert('Feedback data exported successfully!');
+    // Create temporary success notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
+    notification.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span>✅</span>
+            <div>
+                <div class="font-semibold">${msg.title}</div>
+                <div class="text-sm opacity-90">${msg.subtitle}</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
 }
 
-// Clear all feedback data
-function clearAllFeedback() {
-    if (confirm('Are you sure you want to clear all feedback data? This cannot be undone.')) {
+// Simple function to send all feedback via email
+function sendAllFeedback() {
+    feedbackStorage.load();
+    
+    if (feedbackStorage.feedback.length === 0) {
+        alert('No feedback to send!');
+        return;
+    }
+    
+    // Format all feedback for email
+    const subject = encodeURIComponent('Internal Dosimetry Learning Platform - User Feedback');
+    let body = 'Hello! Here is feedback from the Internal Dosimetry Learning Platform:\n\n';
+    
+    feedbackStorage.feedback.forEach((fb, index) => {
+        const category = FEEDBACK_CATEGORIES[fb.category]?.label || 'General Feedback';
+        body += `--- Feedback ${index + 1} ---\n`;
+        body += `Module: ${fb.module}\n`;
+        body += `Section: ${fb.section}\n`;
+        body += `Category: ${category}\n`;
+        body += `Date: ${new Date(fb.timestamp).toLocaleDateString()}\n`;
+        body += `Message: ${fb.message}\n`;
+        if (fb.userEmail) {
+            body += `User Email: ${fb.userEmail}\n`;
+        }
+        body += '\n';
+    });
+    
+    body += `Total feedback items: ${feedbackStorage.feedback.length}\n`;
+    body += `Export date: ${new Date().toLocaleDateString()}\n\n`;
+    body += 'Thank you for improving the learning experience!';
+    
+    const encodedBody = encodeURIComponent(body);
+    const mailtoLink = `mailto:dj@theradguy.com?subject=${subject}&body=${encodedBody}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    // Show success message
+    showFeedbackNotification('📧 Opening your email client...', 'success');
+    
+    // Optionally clear feedback after sending
+    setTimeout(() => {
+        if (confirm('Feedback sent to your email client. Clear the saved feedback?')) {
+            feedbackStorage.clear();
+            updateFloatingIndicator();
+            showFeedbackNotification('✅ Feedback cleared!', 'success');
+        }
+    }, 2000);
+}
+
+// Global function to reset saved feedback
+function resetSavedFeedback() {
+    if (feedbackStorage.feedback.length === 0) {
+        alert('No saved feedback to clear.');
+        return;
+    }
+    
+    const count = feedbackStorage.feedback.length;
+    if (confirm(`Are you sure you want to clear all ${count} saved feedback item${count > 1 ? 's' : ''}? This will allow you to try sending your feedback again.`)) {
         feedbackStorage.clear();
-        updateAdminDashboard();
-        alert('All feedback data cleared.');
+        updateFloatingIndicator();
+        
+        // Show success message
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
+        notification.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span>🗑️</span>
+                <div>
+                    <div class="font-semibold">Feedback Cleared!</div>
+                    <div class="text-sm opacity-90">You can now submit new feedback</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 }
 
 // Global function to open admin dashboard (called from HTML)
 function openFeedbackAdminDashboard() {
-    // Simple password protection for admin access
-    const adminPassword = prompt('Enter admin password to access feedback dashboard:');
-    
-    // You can change this password for production
-    const correctPassword = 'healthphysics2025';
-    
-    if (adminPassword === correctPassword) {
-        setupAdminDashboard();
-    } else if (adminPassword !== null) { // null means user cancelled
-        alert('Incorrect password. Access denied.');
-    }
+    sendAllFeedback();
 }
 
 // Initialize when DOM is ready

@@ -202,9 +202,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="openFeedbackAdminDashboard()" class="text-stone-400 hover:text-blue-600 text-sm font-medium" title="Feedback Admin">
-                        🛠️ Admin
-                    </button>
                     <a href="intake-assessment.html" class="hidden md:inline-flex items-center text-stone-600 hover:text-green-600 font-medium">
                         Next: Intake Assessment
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,7 +240,7 @@
             </div>
 
             <!-- Section 1: What is Bioassay? -->
-            <section id="section-1" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-1" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">1. What is Bioassay?</h2>
                     <div class="flex items-center space-x-2">
@@ -300,7 +297,7 @@
             </section>
 
             <!-- Section 2: In Vitro vs In Vivo Approaches -->
-            <section id="section-2" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-2" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">2. In Vitro vs In Vivo Approaches</h2>
                     <div class="flex items-center space-x-2">
@@ -412,7 +409,7 @@
             </section>
 
             <!-- Section 3: Statistical Concepts -->
-            <section id="section-3" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-3" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">3. Statistical Concepts & Detection Limits</h2>
                     <div class="flex items-center space-x-2">
@@ -505,7 +502,7 @@
             </section>
 
             <!-- Section 4: Quality Assurance -->
-            <section id="section-4" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-4" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">4. Quality Assurance & Accreditation</h2>
                     <div class="flex items-center space-x-2">
@@ -616,7 +613,7 @@
             </section>
 
             <!-- Knowledge Check Quiz -->
-            <section id="knowledge-check" class="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+            <section id="knowledge-check" class="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 relative">
                 <h2 class="text-2xl font-bold mb-4 text-green-800">🧠 Knowledge Check</h2>
                 <p class="text-green-700 mb-6">Test your understanding of bioassay concepts before moving to the next module!</p>
                 
@@ -737,6 +734,18 @@
                     <a href="intake-assessment.html" class="inline-block bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors">
                         Continue to Module 3: Intake Assessment →
                     </a>
+                </div>
+
+                <!-- Quiz feedback buttons (corner position) -->
+                <div class="absolute -bottom-4 right-4 flex gap-2">
+                    <button onclick="openFeedbackModal('knowledge-check', 'Module 2: Bioassay', 'content-suggestion')" 
+                            class="flex items-center gap-1 px-2 py-1 bg-green-100 hover:bg-green-200 rounded text-xs border border-green-300 transition-colors">
+                        💡 Content Suggestion
+                    </button>
+                    <button onclick="openFeedbackModal('knowledge-check', 'Module 2: Bioassay', 'technical-issue')" 
+                            class="flex items-center gap-1 px-2 py-1 bg-green-100 hover:bg-green-200 rounded text-xs border border-green-300 transition-colors">
+                        🐛 Technical Issue
+                    </button>
                 </div>
             </section>
 
@@ -1496,3 +1505,4 @@
     </script>
 </body>
 </html>
+

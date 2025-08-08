@@ -176,9 +176,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="openFeedbackAdminDashboard()" class="text-stone-400 hover:text-blue-600 text-sm font-medium" title="Feedback Admin">
-                        🛠️ Admin
-                    </button>
                     <a href="dose-calculation.html" class="hidden md:inline-flex items-center text-stone-600 hover:text-blue-600 font-medium">
                         Next: Dose Calculation
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -217,7 +214,7 @@
             </div>
 
             <!-- Section 1: Biokinetic Models & IRF Concepts -->
-            <section id="section-1" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-1" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">1. Biokinetic Models & IRF Concepts</h2>
                     <div class="flex items-center space-x-2">
@@ -317,7 +314,7 @@
             </section>
 
             <!-- Section 2: Working Backwards: From Measurement to Intake -->
-            <section id="section-2" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-2" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">2. Working Backwards: From Measurement to Intake</h2>
                     <div class="flex items-center space-x-2">
@@ -385,7 +382,7 @@
             </section>
 
             <!-- Section 3: Unknown Intake Timing Challenges -->
-            <section id="section-3" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-3" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">3. The Challenge of Unknown Intake Timing</h2>
                     <div class="flex items-center space-x-2">
@@ -464,7 +461,7 @@
             </section>
 
             <!-- Section 4: Software Tools (IMBA Overview) -->
-            <section id="section-4" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg">
+            <section id="section-4" class="progress-section mb-8 p-6 border-l-4 border-stone-300 bg-stone-50 rounded-lg relative">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold text-stone-900">4. Software Tools: An Introduction to IMBA</h2>
                     <div class="flex items-center space-x-2">
@@ -504,7 +501,7 @@
             </section>
 
             <!-- Knowledge Check Quiz -->
-            <section id="knowledge-check" class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+            <section id="knowledge-check" class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 relative">
                 <h2 class="text-2xl font-bold mb-4 text-blue-800">🧠 Knowledge Check</h2>
                 <p class="text-blue-700 mb-6">Test your understanding of intake assessment concepts before moving to dose calculation!</p>
                 
@@ -625,6 +622,18 @@
                     <a href="dose-calculation.html" class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
                         Continue to Module 4: Dose Calculation →
                     </a>
+                </div>
+
+                <!-- Quiz feedback buttons (corner position) -->
+                <div class="absolute -bottom-4 right-4 flex gap-2">
+                    <button onclick="openFeedbackModal('knowledge-check', 'Module 3: Intake Assessment', 'content-suggestion')" 
+                            class="flex items-center gap-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 rounded text-xs border border-blue-300 transition-colors">
+                        💡 Content Suggestion
+                    </button>
+                    <button onclick="openFeedbackModal('knowledge-check', 'Module 3: Intake Assessment', 'technical-issue')" 
+                            class="flex items-center gap-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 rounded text-xs border border-blue-300 transition-colors">
+                        🐛 Technical Issue
+                    </button>
                 </div>
             </section>
 
@@ -1310,3 +1319,4 @@
     </script>
 </body>
 </html>
+
